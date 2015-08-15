@@ -1,15 +1,11 @@
-'use strict';
-
 var Hapi = require('hapi');
 var Version = require('../lib/version');
-var Follower = require('../lib');
+var Follower = require('../');
 var Code = require('code');
 var Lab = require('lab');
 
-// Test shortcuts
-
 var lab = exports.lab = Lab.script();
-// var describe = lab.experiment;
+var describe = lab.experiment;
 var expect = Code.expect;
 var it = lab.test;
 
@@ -48,7 +44,7 @@ it('handles register plugin errors', {parallel: false}, function (done) {
     name: 'fake version'
   };
 
-  Follower.init(0, function (err/*, server*/) {
+  Follower.init(0, function (err, server) {
 
     expect(err).to.exist();
     expect(err.message).to.equal('register version failed');

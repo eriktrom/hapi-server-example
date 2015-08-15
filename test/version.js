@@ -1,10 +1,7 @@
-'use strict';
-
-var Server = require('../lib');
+var Server = require('../');
 var Code = require('code');
 var Lab = require('lab');
 var Package = require('../package.json');
-
 
 var lab = exports.lab = Lab.script();
 var describe = lab.experiment;

@@ -5,15 +5,16 @@
   "main": "lib/index.js",
   "scripts": {
     "start": "node lib/start.js",
+    "test": "node node_modules/lab/bin/lab -a code -t 100 -Lv -r console -o stdout -r html -o coverage.html",
     "autostart": "nodemon lib/start.js",
-    "test": "node node_modules/lab/bin/lab -a code -t 100 -L",
-    "build": "BABEL_ENV=production babel lib --out-dir dist"
+    "autotest": "nodemon node_modules/lab/bin/lab -a code -t 100 -Lv"
   },
   "author": "Erik Trom",
   "license": "ISC",
   "devDependencies": {
-    "babel": "5.x.x",
     "code": "1.x.x",
+    "eslint": "^1.1.0",
+    "eslint-plugin-hapi": "^1.2.0",
     "lab": "5.x.x"
   },
   "dependencies": {
