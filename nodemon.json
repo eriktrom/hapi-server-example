@@ -2,9 +2,6 @@
   "restartable": "rs",
   "watch": ["lib/**/*.js"],
   "verbose": true,
-  "execMap": {
-    "js": "node"
-  },
   "events": {
     "restart": "osascript -e 'display notification \"App restarted due to:\n'$FILENAME'\" with title \"nodemon\"'"
   },

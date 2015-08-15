@@ -4,7 +4,8 @@
   "description": "Hapi JSON API for an app that has little requirements ATM",
   "main": "lib/index.js",
   "scripts": {
-    "start": "node lib/index.js",
+    "start": "node lib/start.js",
+    "autostart": "nodemon lib/start.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "BABEL_ENV=production babel lib --out-dir dist"
   },
