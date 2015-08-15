@@ -73,13 +73,7 @@
   "onevar"        : false,    // true: Allow only one `var` statement per function
   "passfail"      : false,    // true: Stop on first error
   "white"         : false,    // true: Check against strict whitespace and indentation rules
-  "globals": {
-    "describe": false,
-    "it": false,
-    "expect": false,
-    "beforeEach": false,
-    "sinon": false
-  },
+  // "globals": {},
   // Suppress specific warnings
   "-W058": true,  // Missing '()' invoking a constructor.
   "-W119": true,   // Allow function* myFnName()

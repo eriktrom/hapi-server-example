@@ -6,13 +6,15 @@
   "scripts": {
     "start": "node lib/start.js",
     "autostart": "nodemon lib/start.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "make test-cov",
     "build": "BABEL_ENV=production babel lib --out-dir dist"
   },
   "author": "Erik Trom",
   "license": "ISC",
   "devDependencies": {
-    "babel": "^5.8.21"
+    "babel": "^5.8.21",
+    "code": "^1.5.0",
+    "lab": "^5.15.1"
   },
   "dependencies": {
     "hapi": "^9.0.1",
