@@ -2,6 +2,8 @@
   "restartable": "rs",
   "watch": [
     "lib/**/*.js",
+    "views/**/*.html",
+    "views/**/*.hbs",
     "test/**/*.js",
     "package.json",
     ".eslintrc",
