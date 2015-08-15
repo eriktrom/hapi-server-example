@@ -1,6 +1,6 @@
-var Server = require('../');
 var Code = require('code');
 var Lab = require('lab');
+var Follower = require('../');
 var Package = require('../package.json');
 
 var lab = exports.lab = Lab.script();
@@ -12,7 +12,7 @@ describe('/version', function () {
 
   it('returns the version from package.json', function (done) {
 
-    Server.init(0, function (err, server) {
+    Follower.init(0, function (err, server) {
 
       expect(err).to.not.exist();
 

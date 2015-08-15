@@ -5,7 +5,6 @@ var Code = require('code');
 var Lab = require('lab');
 
 var lab = exports.lab = Lab.script();
-var describe = lab.experiment;
 var expect = Code.expect;
 var it = lab.test;
 
@@ -44,7 +43,7 @@ it('handles register plugin errors', {parallel: false}, function (done) {
     name: 'fake version'
   };
 
-  Follower.init(0, function (err, server) {
+  Follower.init(0, function (err) {
 
     expect(err).to.exist();
     expect(err.message).to.equal('register version failed');

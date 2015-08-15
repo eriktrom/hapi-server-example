@@ -1,13 +1,13 @@
 {
   "name": "followers-api",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Hapi JSON API for an ember app that follows feeds about something",
   "main": "lib/index.js",
   "scripts": {
-    "start": "node lib/start.js",
-    "test": "node node_modules/lab/bin/lab -a code -t 100 -Lv -r console -o stdout -r html -o coverage.html",
-    "autostart": "nodemon lib/start.js",
-    "autotest": "nodemon node_modules/lab/bin/lab -a code -t 100 -Lv"
+    "start": "make start",
+    "test": "make test",
+    "auto-start": "make auto-start",
+    "auto-test": "make auto-test"
   },
   "author": "Erik Trom",
   "license": "ISC",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "hapi": "9.x.x",
+    "hapi-auth-basic": "2.x.x",
     "hoek": "2.x.x"
   }
 }
