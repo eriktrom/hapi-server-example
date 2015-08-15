@@ -1,5 +1,6 @@
 var Code = require('code');
 var Lab = require('lab');
+var Path = require('path');
 var Follower = require('../');
 var Users = require('../lib/users.json');
 var Basic = require('hapi-auth-basic');
@@ -18,7 +19,7 @@ describe('/private', function () {
 
   it('returns a greeting for the authenticated user', function (done) {
 
-    Follower.init(0, function (err, server) {
+    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -42,7 +43,7 @@ describe('/private', function () {
 
   it('errors on wrong password', function (done) {
 
-    Follower.init(0, function (err, server) {
+    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -65,7 +66,7 @@ describe('/private', function () {
 
   it('errors on failed auth', function (done) {
 
-    Follower.init(0, function (err, server) {
+    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -100,7 +101,7 @@ describe('/private', function () {
       name: 'fake hapi-auth-basic'
     };
 
-    Follower.init(0, function (err) {
+    Follower.init(internals.manifest, internals.composeOptions, function (err) {
 
       expect(err).to.exist();
 
@@ -113,4 +114,20 @@ describe('/private', function () {
 internals.header = function (username, password) {
 
   return 'Basic '+(new Buffer(username+':'+password, 'utf8')).toString('base64');
+};
+
+
+internals.manifest = {
+  connections: [
+    {
+      port: 0
+    }
+  ],
+  plugins: {
+    './private': {}
+  }
+};
+
+internals.composeOptions = {
+  relativeTo: Path.resolve(__dirname, '../lib')
 };
