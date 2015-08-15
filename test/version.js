@@ -3,6 +3,7 @@ var Lab = require('lab');
 var Path = require('path');
 var Follower = require('../');
 var Package = require('../package.json');
+var Config = require('../lib/config');
 
 
 var internals = {};
@@ -22,7 +23,7 @@ describe('/version', function () {
 
       expect(err).to.not.exist();
 
-      server.inject('/version', function (res) {
+      server.select('web-tls').inject('/version', function (res) {
 
         expect(res.statusCode).to.equal(200);
         expect(res.result).to.deep.equal({version: Package.version});
@@ -37,7 +38,15 @@ describe('/version', function () {
 internals.manifest = {
   connections: [
     {
-      port: 0
+      host: 'localhost',
+      port: 0,
+      labels: ['web']
+    },
+    {
+      host: 'localhost',
+      port: 0,
+      labels: ['web-tls'],
+      tls: Config.tls
     }
   ],
   plugins: {

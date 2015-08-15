@@ -2,6 +2,7 @@ var Code = require('code');
 var Lab = require('lab');
 var Path = require('path');
 var Follower = require('../');
+var Config = require('../lib/config');
 
 
 var internals = {};
@@ -23,7 +24,7 @@ describe('/home', function () {
 
       var request = { method: 'GET', url: '/home' };
 
-      server.inject(request, function (res) {
+      server.select('web-tls').inject(request, function (res) {
 
         expect(res.statusCode, 'Status code').to.equal(200);
 
@@ -49,7 +50,15 @@ describe('/home', function () {
 internals.manifest = {
   connections: [
     {
-      port: 0
+      host: 'localhost',
+      port: 0,
+      labels: ['web']
+    },
+    {
+      host: 'localhost',
+      port: 0,
+      labels: ['web-tls'],
+      tls: Config.tls
     }
   ],
   plugins: {

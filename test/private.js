@@ -5,6 +5,7 @@ var Hoek = require('hoek');
 var Follower = require('../');
 var Users = require('../lib/users.json');
 var Auth = require('../lib/auth');
+var Config = require('../lib/config');
 
 
 var internals = {};
@@ -32,7 +33,7 @@ describe('/private', function () {
         }
       };
 
-      server.inject(request, function (res) {
+      server.select('web-tls').inject(request, function (res) {
 
         expect(res.statusCode, 'Status code').to.equal(200);
         expect(res.result, 'result').to.equal('<div>Hello foo</div>');
@@ -56,7 +57,7 @@ describe('/private', function () {
         }
       };
 
-      server.inject(request, function (res) {
+      server.select('web-tls').inject(request, function (res) {
 
         expect(res.statusCode, 'Status code').to.equal(401);
 
@@ -79,7 +80,7 @@ describe('/private', function () {
         }
       };
 
-      server.inject(request, function (res) {
+      server.select('web-tls').inject(request, function (res) {
 
         expect(res.statusCode, 'Status code').to.equal(401);
 
@@ -136,7 +137,15 @@ internals.header = function (username, password) {
 internals.manifest = {
   connections: [
     {
-      port: 0
+      host: 'localhost',
+      port: 0,
+      labels: ['web']
+    },
+    {
+      host: 'localhost',
+      port: 0,
+      labels: ['web-tls'],
+      tls: Config.tls
     }
   ],
   plugins: {
