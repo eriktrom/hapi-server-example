@@ -1,23 +1,23 @@
 {
   "name": "followers-api",
-  "version": "0.0.2",
-  "description": "Hapi JSON API for an app that has little requirements ATM",
+  "version": "0.0.3",
+  "description": "Hapi JSON API for an ember app that follows feeds about something",
   "main": "lib/index.js",
   "scripts": {
     "start": "node lib/start.js",
     "autostart": "nodemon lib/start.js",
-    "test": "make test-cov",
+    "test": "node node_modules/lab/bin/lab -a code -t 100 -L",
     "build": "BABEL_ENV=production babel lib --out-dir dist"
   },
   "author": "Erik Trom",
   "license": "ISC",
   "devDependencies": {
-    "babel": "^5.8.21",
-    "code": "^1.5.0",
-    "lab": "^5.15.1"
+    "babel": "5.x.x",
+    "code": "1.x.x",
+    "lab": "5.x.x"
   },
   "dependencies": {
-    "hapi": "^9.0.1",
-    "hoek": "^2.14.0"
+    "hapi": "9.x.x",
+    "hoek": "2.x.x"
   }
 }
