@@ -1,0 +1,15 @@
+{
+  "name": "followers-api",
+  "version": "1.0.0",
+  "description": "Hapi JSON API for an app that has little requirements ATM",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "BABEL_ENV=production babel lib --out-dir dist"
+  },
+  "author": "Erik Trom",
+  "license": "ISC",
+  "devDependencies": {
+    "babel": "^5.8.21"
+  }
+}
