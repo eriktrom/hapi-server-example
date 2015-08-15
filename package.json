@@ -1,11 +1,12 @@
 {
   "name": "followers-api",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Hapi JSON API for an ember app that follows feeds about something",
   "main": "lib/index.js",
   "scripts": {
     "start": "make start",
     "test": "make test",
+    "test-cov-html": "make test-cov-html",
     "auto-start": "make auto-start",
     "auto-test": "make auto-test"
   },

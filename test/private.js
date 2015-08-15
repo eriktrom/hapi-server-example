@@ -1,9 +1,10 @@
 var Code = require('code');
 var Lab = require('lab');
 var Path = require('path');
+var Hoek = require('hoek');
 var Follower = require('../');
 var Users = require('../lib/users.json');
-var Basic = require('hapi-auth-basic');
+var Auth = require('../lib/auth');
 
 
 var internals = {};
@@ -89,15 +90,15 @@ describe('/private', function () {
 
   it('errors on failed registering of auth', {parallel: false}, function (done) {
 
-    var orig = Basic.register;
+    var orig = Auth.register;
 
-    Basic.register = function (plugin, options, next) {
+    Auth.register = function (plugin, options, next) {
 
-      Basic.register = orig;
+      Auth.register = orig;
       return next(new Error('fail'));
     };
 
-    Basic.register.attributes = {
+    Auth.register.attributes = {
       name: 'fake hapi-auth-basic'
     };
 
@@ -107,6 +108,21 @@ describe('/private', function () {
 
       done();
     });
+  });
+
+  it('errors on missing Auth plugin', function (done) {
+
+    var manifest = Hoek.clone(internals.manifest);
+    delete manifest.plugins['./auth'];
+
+    var failingInit = Follower.init.bind(Follower, manifest, internals.composeOptions, function (err) {
+
+      done();
+    });
+
+    expect(failingInit).to.throw();
+
+    done();
   });
 });
 
@@ -124,7 +140,9 @@ internals.manifest = {
     }
   ],
   plugins: {
-    './private': {}
+    './private': {},
+    './auth': {},
+    'hapi-auth-basic': {}
   }
 };
 
