@@ -4,6 +4,7 @@
   "description": "Hapi JSON API for an app that has little requirements ATM",
   "main": "lib/index.js",
   "scripts": {
+    "start": "node lib/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "BABEL_ENV=production babel lib --out-dir dist"
   },
@@ -11,5 +12,9 @@
   "license": "ISC",
   "devDependencies": {
     "babel": "^5.8.21"
+  },
+  "dependencies": {
+    "hapi": "^9.0.1",
+    "hoek": "^2.14.0"
   }
 }
