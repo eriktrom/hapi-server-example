@@ -1,6 +1,6 @@
 {
   "name": "followers-api",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Hapi JSON API for an ember app that follows feeds about something",
   "main": "lib/index.js",
   "scripts": {
@@ -19,11 +19,13 @@
     "lab": "5.x.x"
   },
   "dependencies": {
+    "boom": "^2.x.x",
     "glue": "^2.x.x",
     "handlebars": "3.x.x",
     "hapi": "9.x.x",
     "hapi-auth-basic": "2.x.x",
     "hapi-auth-cookie": "3.x.x",
-    "hoek": "2.x.x"
+    "hoek": "2.x.x",
+    "joi": "6.x.x"
   }
 }
