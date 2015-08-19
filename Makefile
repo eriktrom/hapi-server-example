@@ -4,7 +4,7 @@ test:
 
 # Test on save
 auto-test:
-	@nodemon node_modules/lab/bin/lab --colors -a code -t 100 -Lv
+	@nodemon node_modules/lab/bin/lab --colors -a code -t 100
 
 # Test with coverage
 test-cov:
