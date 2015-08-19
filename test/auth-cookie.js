@@ -38,21 +38,6 @@ describe('/auth-basic', function () {
       done();
     });
   });
-
-  it('errors on missing hapi-auth-cookie plugin', function(done) {
-
-    var manifest = Hoek.clone(internals.manifest);
-    delete manifest.plugins['hapi-auth-cookie'];
-
-    var failingInit = Follower.init.bind(Follower, manifest, internals.composeOptions, function(err) {
-
-      done();
-    });
-
-    expect(failingInit).to.throw();
-
-    done();
-  });
 });
 
 

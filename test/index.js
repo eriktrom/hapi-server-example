@@ -5,6 +5,7 @@ var Code = require('code');
 var Lab = require('lab');
 var Path = require('path');
 var Config = require('../lib/config');
+var GenerateCrumb = require('./generate-crumb');
 
 
 var internals = {};
@@ -99,44 +100,36 @@ describe('server.ext() request cycle handles', function() {
 
       expect(err).to.not.exist();
 
-      var request = {
-        method: 'POST',
-        url: '/login',
-        payload: internals.loginCredentials('bar', 'bar')
-      };
+      GenerateCrumb(server, {username: 'bar', password: 'bar'}).then(function (request) {
 
-      // Successfull Login
+        server.select('api').inject(request, function(res) {
 
-      internals.server = server;
+          expect(res.statusCode, 'Status code').to.equal(200);
+          expect(res.result.username).to.equal('Bar Head');
 
-      internals.server.select('api').inject(request, function(res) {
+          var header = res.headers['set-cookie'];
+          expect(header.length).to.equal(1);
 
-        expect(res.statusCode, 'Status code').to.equal(200);
-        expect(res.result.username).to.equal('Bar Head');
+          expect(header[0]).to.contain('Max-Age=60');
 
-        var header = res.headers['set-cookie'];
-        expect(header.length).to.equal(1);
+          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
 
-        expect(header[0]).to.contain('Max-Age=60');
+          // ./home greets authenticated user
 
-        internals.cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
+          var request2 = {
+            method: 'GET',
+            url: '/admin',
+            headers: {
+              cookie: 'followers-api=' + cookie[1]
+            }
+          };
 
+          server.select('web-tls').inject(request2, function(res) {
 
-        // ./home greets authenticated user
-
-        var request2 = {
-          method: 'GET',
-          url: '/admin',
-          headers: {
-            cookie: 'followers-api=' + internals.cookie[1]
-          }
-        };
-
-        internals.server.select('web-tls').inject(request2, function(res) {
-
-          expect(res.statusCode, 'Status code').to.equal(301);
-          expect(res.headers.location).to.equal('https://localhost:8001/home');
-          internals.server.stop(done);
+            expect(res.statusCode, 'Status code').to.equal(301);
+            expect(res.headers.location).to.equal('https://localhost:8001/home');
+            server.stop(done);
+          });
         });
       });
     });
@@ -155,41 +148,39 @@ describe('server.ext() request cycle handles', function() {
 
       // Successfull Login
 
-      internals.server = server;
-
-      internals.server.select('web-tls').inject(request, function(res) {
+      server.select('web-tls').inject(request, function(res) {
 
         expect(res.statusCode, 'Status code').to.equal(302);
         expect(res.headers.location).to.equal('/login');
-        internals.server.stop(done);
+        server.stop(done);
       });
     });
   });
 
-  it('joi validation error transformed', function(done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+  // He deleted this but we still have the code so i hold out a bit
+  // it('joi validation error transformed', function(done) {
 
-      expect(err).to.not.exist();
+  //   Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+
+  //     expect(err).to.not.exist();
 
 
-      internals.server = server;
 
+  //     var request = {
+  //       method: 'POST',
+  //       url: '/login',
+  //       payload: internals.loginCredentials('foowakawaka', 'bamo')
+  //     }; // This fails loggin in event w. correct credentials..
 
-      var request = {
-        method: 'POST',
-        url: '/login',
-        payload: internals.loginCredentials('foowakawaka', 'bamo')
-      }; // This fails loggin in event w. correct credentials..
+  //     server.select('api').inject(request, function(res) {
 
-      internals.server.select('api').inject(request, function(res) {
-
-        expect(res.statusCode, 'Status code').to.equal(400);
-        expect(res.result.message).to.equal('Malformed Data Entered');
-        internals.server.stop(done);
-      });
-    });
-  });
+  //       expect(res.statusCode, 'Status code').to.equal(400);
+  //       expect(res.result.message).to.equal('Malformed Data Entered');
+  //       server.stop(done);
+  //     });
+  //   });
+  // });
 
 });
 
@@ -217,18 +208,11 @@ internals.manifest = {
       'select': ['api']
     }],
     './auth-cookie': {},
-    'hapi-auth-cookie': {}
+    'hapi-auth-cookie': {},
+    'crumb': Config.crumb
   }
 };
 
 internals.composeOptions = {
   relativeTo: Path.resolve(__dirname, '../lib')
-};
-
-internals.loginCredentials = function(username, password) {
-
-  return JSON.stringify({
-    username: username,
-    password: password
-  });
 };

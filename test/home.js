@@ -1,11 +1,12 @@
 var Code = require('code');
 var Lab = require('lab');
 var Path = require('path');
-var Config = require('../lib/config');
 var Cheerio = require('cheerio');
 var Auth = require('hapi-auth-cookie');
 var Hoek = require('hoek');
+var Config = require('../lib/config');
 var Follower = require('../');
+var GenerateCrumb = require('./generate-crumb');
 
 
 var internals = {};
@@ -58,44 +59,38 @@ describe('/home', function () {
 
       expect(err).to.not.exist();
 
-      var request = {
-        method: 'POST',
-        url: '/login',
-        payload: internals.loginCredentials('foo', 'foo')
-      };
+      GenerateCrumb(server, true).then(function (request) {
 
-      // Successful Login
-      internals.server = server;
+        server.select('api').inject(request, function (res) {
 
-      internals.server.select('api').inject(request, function (res) {
+          expect(res.statusCode, 'Status code').to.equal(200);
+          expect(res.result.username).to.equal('Foo Foo');
 
-        expect(res.statusCode, 'Status code').to.equal(200);
-        expect(res.result.username).to.equal('Foo Foo');
+          var header = res.headers['set-cookie'];
+          expect(header.length).to.equal(1);
+          expect(header[0]).to.contain('Max-Age=60');
 
-        var header = res.headers['set-cookie'];
-        expect(header.length).to.equal(1);
+          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
 
-        expect(header[0]).to.contain('Max-Age=60');
-        var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
+          // ./home greets authenticated user
 
-        // ./home greets authenticated user
+          var request2 = {
+            method: 'GET',
+            url: '/home',
+            headers: {
+              cookie: 'followers-api='+cookie[1]
+            }
+          };
 
-        var request2 = {
-          method: 'GET',
-          url: '/home',
-          headers: {
-            cookie: 'followers-api='+cookie[1]
-          }
-        };
+          server.select('web-tls').inject(request2, function (res) {
 
-        internals.server.select('web-tls').inject(request2, function (res) {
+            var $ = Cheerio.load(res.result);
+            var result = ($('h1', 'body').text());
 
-          var $ = Cheerio.load(res.result);
-          var result = ($('h1', 'body').text());
+            expect(result).to.equal('Foo Foo');
 
-          expect(result).to.equal('Foo Foo');
-
-          internals.server.stop(done);
+            server.stop(done);
+          });
         });
       });
     });
@@ -110,44 +105,38 @@ describe('./account', function () {
 
       expect(err).to.not.exist();
 
-      var request = {
-        method: 'POST',
-        url: '/login',
-        payload: internals.loginCredentials('foo', 'foo')
-      };
+      GenerateCrumb(server, true).then(function (request) {
 
-      // Successful Login
-      internals.server = server;
+        server.select('api').inject(request, function (res) {
 
-      internals.server.select('api').inject(request, function (res) {
+          expect(res.statusCode, 'Status code').to.equal(200);
+          expect(res.result.username).to.equal('Foo Foo');
 
-        expect(res.statusCode, 'Status code').to.equal(200);
-        expect(res.result.username).to.equal('Foo Foo');
+          var header = res.headers['set-cookie'];
+          expect(header.length).to.equal(1);
 
-        var header = res.headers['set-cookie'];
-        expect(header.length).to.equal(1);
+          expect(header[0]).to.contain('Max-Age=60');
+          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
 
-        expect(header[0]).to.contain('Max-Age=60');
-        var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
+          // ./home greets authenticated user
 
-        // ./home greets authenticated user
+          var request2 = {
+            method: 'GET',
+            url: '/account',
+            headers: {
+              cookie: 'followers-api='+cookie[1]
+            }
+          };
 
-        var request2 = {
-          method: 'GET',
-          url: '/account',
-          headers: {
-            cookie: 'followers-api='+cookie[1]
-          }
-        };
+          server.select('web-tls').inject(request2, function (res) {
 
-        internals.server.select('web-tls').inject(request2, function (res) {
+            var $ = Cheerio.load(res.result);
+            var result = ($('h3', 'body').text());
 
-          var $ = Cheerio.load(res.result);
-          var result = ($('h3', 'body').text());
+            expect(result).to.equal('Foo Foo Account');
 
-          expect(result).to.equal('Foo Foo Account');
-
-          internals.server.stop(done);
+            server.stop(done);
+          });
         });
       });
     });
@@ -159,44 +148,38 @@ describe('./account', function () {
 
       expect(err).to.not.exist();
 
-      var request = {
-        method: 'POST',
-        url: '/login',
-        payload: internals.loginCredentials('foo', 'foo')
-      };
+      GenerateCrumb(server, true).then(function (request) {
 
-      // Successful Login
-      internals.server = server;
+        server.select('api').inject(request, function (res) {
 
-      internals.server.select('api').inject(request, function (res) {
+          expect(res.statusCode, 'Status code').to.equal(200);
+          expect(res.result.username).to.equal('Foo Foo');
 
-        expect(res.statusCode, 'Status code').to.equal(200);
-        expect(res.result.username).to.equal('Foo Foo');
+          var header = res.headers['set-cookie'];
+          expect(header.length).to.equal(1);
 
-        var header = res.headers['set-cookie'];
-        expect(header.length).to.equal(1);
+          expect(header[0]).to.contain('Max-Age=60');
+          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
 
-        expect(header[0]).to.contain('Max-Age=60');
-        var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
+          // ./home greets authenticated user
 
-        // ./home greets authenticated user
+          var request2 = {
+            method: 'GET',
+            url: '/admin',
+            headers: {
+              cookie: 'followers-api='+cookie[1]
+            }
+          };
 
-        var request2 = {
-          method: 'GET',
-          url: '/admin',
-          headers: {
-            cookie: 'followers-api='+cookie[1]
-          }
-        };
+          server.select('web-tls').inject(request2, function (res) {
 
-        internals.server.select('web-tls').inject(request2, function (res) {
+            var $ = Cheerio.load(res.result);
+            var result = ($('h3', 'body').text());
 
-          var $ = Cheerio.load(res.result);
-          var result = ($('h3', 'body').text());
+            expect(result).to.equal('Success, you accessed the admin page!');
 
-          expect(result).to.equal('Success, you accessed the admin page!');
-
-          internals.server.stop(done);
+            server.stop(done);
+          });
         });
       });
     });
@@ -208,44 +191,38 @@ describe('./account', function () {
 
       expect(err).to.not.exist();
 
-      var request = {
-        method: 'POST',
-        url: '/login',
-        payload: internals.loginCredentials('bar', 'bar')
-      };
+      GenerateCrumb(server, {username: 'bar', password: 'bar'}).then(function (request) {
 
-      // Successful Login
-      internals.server = server;
+        server.select('api').inject(request, function (res) {
 
-      internals.server.select('api').inject(request, function (res) {
+          expect(res.statusCode, 'Status code').to.equal(200);
+          expect(res.result.username).to.equal('Bar Head');
 
-        expect(res.statusCode, 'Status code').to.equal(200);
-        expect(res.result.username).to.equal('Bar Head');
+          var header = res.headers['set-cookie'];
+          expect(header.length).to.equal(1);
 
-        var header = res.headers['set-cookie'];
-        expect(header.length).to.equal(1);
+          expect(header[0]).to.contain('Max-Age=60');
+          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
 
-        expect(header[0]).to.contain('Max-Age=60');
-        var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
+          // ./home greets authenticated user
 
-        // ./home greets authenticated user
+          var request2 = {
+            method: 'GET',
+            url: '/account',
+            headers: {
+              cookie: 'followers-api='+cookie[1]
+            }
+          };
 
-        var request2 = {
-          method: 'GET',
-          url: '/account',
-          headers: {
-            cookie: 'followers-api='+cookie[1]
-          }
-        };
+          server.select('web-tls').inject(request2, function (res) {
 
-        internals.server.select('web-tls').inject(request2, function (res) {
+            var $ = Cheerio.load(res.result);
+            var result = ($('h3', 'body').text());
 
-          var $ = Cheerio.load(res.result);
-          var result = ($('h3', 'body').text());
+            expect(result).to.equal('Bar Head Account');
 
-          expect(result).to.equal('Bar Head Account');
-
-          internals.server.stop(done);
+            server.stop(done);
+          });
         });
       });
     });
@@ -316,16 +293,12 @@ internals.manifest = {
       'select': ['api']
     }],
     './auth-cookie': {},
-    'hapi-auth-cookie': {}
+    'hapi-auth-cookie': {},
+    'crumb': Config.crumb
   }
 };
 
 internals.composeOptions = {
   relativeTo: Path.resolve(__dirname, '../lib')
-};
-
-internals.loginCredentials = function(username, password) {
-
-  return JSON.stringify({ username: username, password: password });
 };
 
