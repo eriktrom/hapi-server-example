@@ -2,6 +2,7 @@ var Code = require('code');
 var Lab = require('lab');
 var Path = require('path');
 var Config = require('../../lib/config');
+var Cheerio = require('cheerio');
 var Follower = require('../../');
 
 
@@ -14,11 +15,31 @@ var expect = Code.expect;
 var it = lab.test;
 
 
-describe('/login', function () {
+describe('/login', function() {
 
-  it('Ensure login works', function (done) {
+  it('GET request access login page', function(done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+
+      var request1 = {
+        method: 'GET',
+        url: '/login'
+      };
+
+      server.select('web-tls').inject(request1, function(res) {
+
+        // expect(res.result).to.equal('foofoo');
+
+        expect(res.statusCode, 'Status code').to.equal(200);
+
+        server.stop(done);
+      });
+    });
+  });
+
+  it('POST logged in user gets redirected', function(done) {
+
+    Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
 
       expect(err).to.not.exist();
 
@@ -28,29 +49,217 @@ describe('/login', function () {
         payload: internals.loginCredentials('foo', 'foo')
       };
 
-      var tlsServer = server.select('web-tls');
+      // Successfull Login
 
-      tlsServer.inject(request, function (res) {
+      internals.server = server;
 
-        expect(res.statusCode, 'Status code for POST /login').to.equal(200);
-        expect(res.result.username, 'Result: res.result.username').to.equal('Foo Foo');
+      internals.server.select('api').inject(request, function(res) {
 
-        // Get Cookie
+        expect(res.statusCode, 'Status code').to.equal(200);
+        expect(res.result.username).to.equal('Foo Foo');
+
         var header = res.headers['set-cookie'];
         expect(header.length).to.equal(1);
+
         expect(header[0]).to.contain('Max-Age=60');
 
+        internals.cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
 
-        // TODO: I think this is supposed to assert that going back to home does
-        // not log us out
 
-        tlsServer.inject({ method: 'GET', url: '/home', headers: res.headers }, function (res) {
+        // ./home greets authenticated user
 
-          expect(res.statusCode, 'Status code for GET /home').to.equal(200);
-          // expect(res.result, 'Result: res.result').to.equal('Foo Foo');
+        var request2 = {
+          method: 'GET',
+          url: '/home',
+          headers: {
+            cookie: 'followers-api=' + internals.cookie[1]
+          }
+        };
+
+        internals.server.select('web-tls').inject(request2, function(res) {
+
+          var $ = Cheerio.load(res.result);
+          var result = ($('h1', 'body').text());
+
+          expect(result).to.equal('Foo Foo');
+
+
+          // ./login GET redirects to account if already logged in.
+
+
+          var request3 = {
+            method: 'GET',
+            url: '/login',
+            headers: {
+              cookie: 'followers-api=' + internals.cookie[1]
+            }
+          };
+
+          internals.server.select('web-tls').inject(request3, function(res) {
+
+            expect(res.statusCode, 'Status code').to.equal(302); // redirected
+            expect(res.headers.location).to.include('/account');
+
+            internals.server.stop(done);
+          });
+        });
+      });
+    });
+  });
+
+
+  // @todo  split below into tests
+
+
+  it('Login Fails', function(done) {
+
+    Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+
+      var tlserver = server.select('web-tls');
+
+      // Successfull Login
+
+      var request = {
+        method: 'POST',
+        url: '/login',
+        headers: {
+          authorization: internals.loginCredentials('', 'test')
+        }
+      }; // This fails loggin in event w. correct credentials..
+
+      tlserver.inject(request, function(res) {
+
+        expect(res.statusCode, 'Status code').to.equal(401);
+        expect(res.result.message).to.equal('Did not submit password or username');
+
+      });
+
+
+      var request2 = {
+        method: 'POST',
+        url: '/login',
+        headers: {
+          authorization: internals.loginCredentials('foo', 'bamo')
+        }
+      }; // This fails loggin in event w. correct credentials..
+
+      tlserver.inject(request2, function(res) {
+
+        expect(res.statusCode, 'Status code').to.equal(401);
+        expect(res.result.message).to.equal('Did not submit password or username');
+
+      });
+
+      var request3 = {
+        method: 'POST',
+        url: '/login',
+        headers: {
+          authorization: internals.loginCredentials('Mamo', 'bamo')
+        }
+      }; // This fails loggin in event w. correct credentials..
+
+      tlserver.inject(request3, function(res) {
+
+        expect(res.statusCode, 'Status code').to.equal(401);
+        expect(res.result.message).to.equal('Did not submit password or username');
+
+      });
+
+      var request4 = {
+        method: 'POST',
+        url: '/login',
+        payload: JSON.stringify({
+          username: 'boot',
+          password: 'toot'
+        })
+      }; // This fails loggin in event w. correct credentials..
+
+      tlserver.inject(request4, function(res) {
+
+        expect(res.statusCode, 'Status code').to.equal(401);
+        expect(res.result.message).to.equal('Invalid password or username');
+
+        server.stop(done);
+      });
+    });
+  });
+});
+
+describe('/logout', function() {
+
+  it('Ensure logout works', function(done) {
+
+    Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+
+      expect(err).to.not.exist();
+
+      var request = {
+        method: 'POST',
+        url: '/login',
+        payload: internals.loginCredentials('foo', 'foo')
+      };
+
+      var tlserver = server.select('web-tls');
+
+
+      // Successfull Login
+
+
+      tlserver.inject(request, function(res) {
+
+        expect(res.statusCode, 'Status code').to.equal(200);
+        expect(res.result.username).to.equal('Foo Foo');
+
+        var header = res.headers['set-cookie'];
+        expect(header.length).to.equal(1);
+
+        expect(header[0]).to.contain('Max-Age=60');
+        var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
+
+
+        // ./home greets authenticated user
+
+
+        var request2 = {
+          method: 'POST',
+          url: '/logout',
+          headers: {
+            cookie: 'followers-api=' + cookie[1]
+          }
+        };
+        tlserver.inject(request2, function(res) {
+
+          expect(res.result.message).to.equal('Logged out');
 
           server.stop(done);
         });
+      });
+    });
+  });
+
+  it('unregistered user tried to access restricted ./logout on api', function(done) {
+
+    Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+
+      expect(err).to.not.exist();
+
+      var request = {
+        method: 'POST',
+        url: '/logout'
+      };
+
+      // Successfull Login
+
+      internals.server = server;
+
+      internals.server.select('api').inject(request, function(res) {
+
+        // expect(res.result.username).to.equal('Bar Head');
+
+        expect(res.statusCode, 'Status code').to.equal(302);
+        expect(res.headers.location).to.equal('/login');
+
+        internals.server.stop(done);
       });
     });
   });
@@ -89,5 +298,5 @@ internals.composeOptions = {
 
 internals.loginCredentials = function (username, password) {
 
-  return JSON.stringify({"username": username, "password": password});
+  return JSON.stringify({username: username, password: password});
 };
