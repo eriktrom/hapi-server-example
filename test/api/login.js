@@ -124,8 +124,8 @@ describe('/login', function() {
 
       server.select('web-tls').inject(request, function(res) {
 
-        expect(res.statusCode, 'Status code').to.equal(401);
-        expect(res.result.message).to.equal('Did not submit password or username');
+        expect(res.statusCode, 'Status code').to.equal(400);
+        expect(res.result.message).to.equal('Malformed Data Entered');
 
         server.stop(done);
       });
@@ -146,8 +146,8 @@ describe('/login', function() {
 
       server.select('web-tls').inject(request, function(res) {
 
-        expect(res.statusCode, 'Status code').to.equal(401);
-        expect(res.result.message).to.equal('Did not submit password or username');
+        expect(res.statusCode, 'Status code').to.equal(400);
+        expect(res.result.message).to.equal('Malformed Data Entered');
 
         server.stop(done);
       });
@@ -191,22 +191,23 @@ describe('/login', function() {
       });
     });
 
-    it('Cookie auth login succeeds - with good password & username', function (done) {
 
-      Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
-        var request = {
-          method: 'POST',
-          url: '/login',
-          payload: internals.loginCredentials('foo', 'foo')
-        };
+  });
 
-        server.select('web-tls').inject(request, function(res) {
+  it('Cookie auth login succeeds - with good password & username', function (done) {
 
-          expect(res.statusCode, 'Status code').to.equal(401);
-          expect(res.result.message).to.equal('Did not submit password or username');
+    Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+      var request = {
+        method: 'POST',
+        url: '/login',
+        payload: internals.loginCredentials('foo', 'foo')
+      };
 
-          server.stop(done);
-        });
+      server.select('web-tls').inject(request, function(res) {
+
+        expect(res.statusCode, 'Status code').to.equal(200);
+
+        server.stop(done);
       });
     });
   });
@@ -271,12 +272,7 @@ describe('/logout', function() {
       };
 
       // Successfull Login
-
-      server = server;
-
       server.select('api').inject(request, function(res) {
-
-        // expect(res.result.username).to.equal('Bar Head');
 
         expect(res.statusCode, 'Status code').to.equal(302);
         expect(res.headers.location).to.equal('/login');
