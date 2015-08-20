@@ -32,7 +32,7 @@ describe('/index', function () {
 
   it('starts server on provided port', function (done) {
 
-    Follower.init({ connections: [{ port: 5000, labels: ['web', 'web-tls', 'api'] }] }, {}, function (err, server) {
+    Follower.init({ connections: [{ port: 5000, labels: ['web', 'web-tls', 'api'] }], plugins: {'vision': {}} }, {}, function (err, server) {
 
       expect(err).to.not.exist();
       expect(server.select('web').info.port).to.equal(5000);
@@ -222,7 +222,9 @@ internals.manifest = {
     }],
     './auth-cookie': {},
     'hapi-auth-cookie': {},
-    'crumb': Config.crumb
+    'crumb': Config.crumb,
+    'vision': {},
+    'inert': {}
   }
 };
 

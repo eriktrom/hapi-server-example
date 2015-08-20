@@ -294,7 +294,9 @@ internals.manifest = {
     }],
     './auth-cookie': {},
     'hapi-auth-cookie': {},
-    'crumb': Config.crumb
+    'crumb': Config.crumb,
+    'vision': {},
+    'inert': {}
   }
 };
 

@@ -67,7 +67,8 @@ internals.manifest = {
     }
   ],
   plugins: {
-    './version': {}
+    './version': {},
+    'vision': {}
   }
 };
 
