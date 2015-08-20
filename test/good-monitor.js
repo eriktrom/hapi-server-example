@@ -31,7 +31,7 @@ describe('good', function () {
       name: 'fake good'
     };
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Follower.init(internals.manifest, internals.composeOptions, function (err) {
 
       expect(err).to.exist();
       expect(err.message).to.equal('fail');

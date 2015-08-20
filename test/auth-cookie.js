@@ -2,7 +2,6 @@ var Code = require('code');
 var Lab = require('lab');
 var Path = require('path');
 var HapiAuthCookie = require('hapi-auth-cookie');
-var Hoek = require('hoek');
 var Follower = require('../');
 
 var internals = {};

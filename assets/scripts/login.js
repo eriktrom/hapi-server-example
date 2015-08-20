@@ -11,7 +11,7 @@ internals.executeAJAX = function (url, data, callback) {
 
   request.timedOut = false;
 
-  var requestTimer = setTimeout(function () {
+  setTimeout(function () {
 
     // Request timed out, Retry or inform user.
     request.timedOut = true;

@@ -1,7 +1,5 @@
 var Promise = require('bluebird');
 
-var internals = {};
-
 module.exports = function generateCrumb (server, opts) {
 
   if (!opts) { throw Error('Forgot to pass opts or true as second param to generate crumb'); }

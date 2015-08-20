@@ -1,4 +1,3 @@
-var Hapi = require('hapi');
 var Version = require('../lib/version');
 var Follower = require('../');
 var Code = require('code');

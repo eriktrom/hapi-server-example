@@ -364,7 +364,7 @@ describe('/logout', function () {
 
       GenerateCrumb(server, true).then(function (request) {
 
-        server.select('web-tls').inject(request, function (res) {
+        server.select('web-tls').inject(request, function (/*res*/) {
 
           var cookie1 = request.headers.cookie;
           var newCookie = cookie1; // variant apart from last test
