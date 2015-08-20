@@ -64,7 +64,7 @@ describe('/home', function () {
         server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
-          expect(res.result.username).to.equal('Foo Foo');
+          expect(res.result.username).to.equal('foo');
 
           var header = res.headers['set-cookie'];
           expect(header.length).to.equal(1);
@@ -82,9 +82,9 @@ describe('/home', function () {
             }
           };
 
-          server.select('web-tls').inject(request2, function (res) {
+          server.select('web-tls').inject(request2, function (res2) {
 
-            var $ = Cheerio.load(res.result);
+            var $ = Cheerio.load(res2.result);
             var result = ($('h1', 'body').text());
 
             expect(result).to.equal('Foo Foo');
@@ -110,7 +110,7 @@ describe('./account', function () {
         server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
-          expect(res.result.username).to.equal('Foo Foo');
+          expect(res.result.username).to.equal('foo');
 
           var header = res.headers['set-cookie'];
           expect(header.length).to.equal(1);
@@ -128,9 +128,9 @@ describe('./account', function () {
             }
           };
 
-          server.select('web-tls').inject(request2, function (res) {
+          server.select('web-tls').inject(request2, function (res2) {
 
-            var $ = Cheerio.load(res.result);
+            var $ = Cheerio.load(res2.result);
             var result = ($('h3', 'body').text());
 
             expect(result).to.equal('Foo Foo Account');
@@ -153,7 +153,7 @@ describe('./account', function () {
         server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
-          expect(res.result.username).to.equal('Foo Foo');
+          expect(res.result.username).to.equal('foo');
 
           var header = res.headers['set-cookie'];
           expect(header.length).to.equal(1);
@@ -171,9 +171,9 @@ describe('./account', function () {
             }
           };
 
-          server.select('web-tls').inject(request2, function (res) {
+          server.select('web-tls').inject(request2, function (res2) {
 
-            var $ = Cheerio.load(res.result);
+            var $ = Cheerio.load(res2.result);
             var result = ($('h3', 'body').text());
 
             expect(result).to.equal('Success, you accessed the admin page!');
@@ -196,7 +196,7 @@ describe('./account', function () {
         server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
-          expect(res.result.username).to.equal('Bar Head');
+          expect(res.result.username).to.equal('bar');
 
           var header = res.headers['set-cookie'];
           expect(header.length).to.equal(1);
@@ -214,9 +214,9 @@ describe('./account', function () {
             }
           };
 
-          server.select('web-tls').inject(request2, function (res) {
+          server.select('web-tls').inject(request2, function (res2) {
 
-            var $ = Cheerio.load(res.result);
+            var $ = Cheerio.load(res2.result);
             var result = ($('h3', 'body').text());
 
             expect(result).to.equal('Bar Head Account');
@@ -229,13 +229,13 @@ describe('./account', function () {
   });
 });
 
-describe('hapi-auth-cookie tests', function() {
+describe('hapi-auth-cookie tests', function () {
 
-  it('errors on failed registering of auth-cookie', {parallel: false}, function(done) {
+  it('errors on failed registering of auth-cookie', {parallel: false}, function (done) {
 
     var orig = Auth.register;
 
-    Auth.register = function(plugin, options, next) {
+    Auth.register = function (plugin, options, next) {
 
       Auth.register = orig;
       return next(new Error('fail'));
@@ -245,7 +245,7 @@ describe('hapi-auth-cookie tests', function() {
       name: 'fake hapi-auth-cookie'
     };
 
-    Follower.init(internals.manifest, internals.composeOptions, function(err) {
+    Follower.init(internals.manifest, internals.composeOptions, function (err) {
 
       expect(err).to.exist();
 
@@ -253,12 +253,12 @@ describe('hapi-auth-cookie tests', function() {
     });
   });
 
-  it('errors on missing Auth cookie plugin', function(done) {
+  it('errors on missing Auth cookie plugin', function (done) {
 
     var manifest = Hoek.clone(internals.manifest);
     delete manifest.plugins['./auth-cookie'];
 
-    var failingInit = Follower.init.bind(Follower, manifest, internals.composeOptions, function(err) {
+    var failingInit = Follower.init.bind(Follower, manifest, internals.composeOptions, function (err) {
 
       expect(err).to.exist();
       done();

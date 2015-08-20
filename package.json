@@ -31,11 +31,11 @@
     "good-http": "5.x.x",
     "handlebars": "3.x.x",
     "hapi": "9.x.x",
-    "hapi-auth-basic": "2.x.x",
     "hapi-auth-cookie": "3.x.x",
     "hoek": "2.x.x",
     "inert": "3.x.x",
     "joi": "6.x.x",
+    "lodash": "^3.10.1",
     "vision": "3.x.x"
   }
 }

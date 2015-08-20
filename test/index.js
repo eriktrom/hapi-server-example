@@ -78,13 +78,13 @@ describe('/index', function () {
   });
 });
 
-describe('server.ext() request cycle handles', function() {
+describe('server.ext() request cycle handles', function () {
 
-  it('bad route entered', function(done) {
+  it('bad route entered', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
-      server.select('web-tls').inject('/wakawaka', function(res) {
+      server.select('web-tls').inject('/wakawaka', function (res) {
 
         expect(res.statusCode).to.equal(301);
         expect(res.headers.location).to.equal('https://localhost:8001/home');
@@ -94,18 +94,18 @@ describe('server.ext() request cycle handles', function() {
     });
   });
 
-  it('insufficient scope for user web-tls', function(done) {
+  it('insufficient scope for user web-tls', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
       GenerateCrumb(server, {username: 'bar', password: 'bar'}).then(function (request) {
 
-        server.select('api').inject(request, function(res) {
+        server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
-          expect(res.result.username).to.equal('Bar Head');
+          expect(res.result.username).to.equal('bar');
 
           var header = res.headers['set-cookie'];
           expect(header.length).to.equal(1);
@@ -124,10 +124,10 @@ describe('server.ext() request cycle handles', function() {
             }
           };
 
-          server.select('web-tls').inject(request2, function(res) {
+          server.select('web-tls').inject(request2, function (res2) {
 
-            expect(res.statusCode, 'Status code').to.equal(301);
-            expect(res.headers.location).to.equal('https://localhost:8001/home');
+            expect(res2.statusCode, 'Status code').to.equal(301);
+            expect(res2.headers.location).to.equal('https://localhost:8001/home');
             server.stop(done);
           });
         });
@@ -135,9 +135,9 @@ describe('server.ext() request cycle handles', function() {
     });
   });
 
-  it('insufficient scope public user web-tls', function(done) {
+  it('insufficient scope public user web-tls', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -148,7 +148,7 @@ describe('server.ext() request cycle handles', function() {
 
       // Successfull Login
 
-      server.select('web-tls').inject(request, function(res) {
+      server.select('web-tls').inject(request, function (res) {
 
         expect(res.statusCode, 'Status code').to.equal(302);
         expect(res.headers.location).to.equal('/login');
@@ -157,30 +157,43 @@ describe('server.ext() request cycle handles', function() {
     });
   });
 
+  it('Logging in again, even with the correct cookie will throw a 403 from the crumb plugin when wrong username/password', function (done) {
 
-  // He deleted this but we still have the code so i hold out a bit
-  // it('joi validation error transformed', function(done) {
+    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
-  //   Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+      expect(err).to.not.exist();
 
-  //     expect(err).to.not.exist();
+      GenerateCrumb(server, true).then(function (request) {
 
+        server.select('api').inject(request, function (res) {
 
+          expect(res.statusCode, 'Status code').to.equal(200);
 
-  //     var request = {
-  //       method: 'POST',
-  //       url: '/login',
-  //       payload: internals.loginCredentials('foowakawaka', 'bamo')
-  //     }; // This fails loggin in event w. correct credentials..
+          var header = res.headers['set-cookie'];
+          expect(header.length).to.equal(1);
+          expect(header[0]).to.contain('Max-Age=60');
+          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
 
-  //     server.select('api').inject(request, function(res) {
+          var request2 = {
+            method: 'POST',
+            url: '/login',
+            payload: { username: 'bogus', password: 'more bogus' },
+            headers: {
+              cookie: 'followers-api=' + cookie[1]
+            }
+          };
 
-  //       expect(res.statusCode, 'Status code').to.equal(400);
-  //       expect(res.result.message).to.equal('Malformed Data Entered');
-  //       server.stop(done);
-  //     });
-  //   });
-  // });
+          server.select('api').inject(request2, function (res2) {
+
+            expect(res2.statusCode, 'Status code').to.equal(401);
+            expect(res2.result.message).to.equal(Config.genericLoginErrorMsg);
+
+            server.stop(done);
+          });
+        });
+      });
+    });
+  });
 
 });
 

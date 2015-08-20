@@ -1,14 +1,13 @@
 {
   "restartable": "rs",
   "watch": [
-    "lib/**/*.js",
-    "views/**/*.html",
-    "views/**/*.hbs",
+    "assets/**/*",
+    "lib/**/*",
+    "views/**/*",
     "test/**/*.js",
     "package.json",
     ".eslintrc",
     "nodemon.json",
-    "lib/**/*.json",
     "Makefile"
   ],
   "verbose": true,

@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "foo",
+      "first": "Foo",
+      "last": "Foo",
+      "password": "foo",
+      "email": "foo@hapiu.com",
+      "scope": ["admin", "user"]
+    },
+    {
+      "id": 2,
+      "username": "bar",
+      "first": "Bar",
+      "last": "Head",
+      "password": "bar",
+      "email": "bar@hapiuni.com",
+      "scope": ["user"]
+    }
+  ]
+}

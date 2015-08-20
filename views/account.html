@@ -7,11 +7,9 @@
     <meta name="crumb" content="{{crumb}}">
   </head>
   <body>
+    <h3>{{user.first}} {{user.last}} Account</h3>
     {{#if admin}}
-      <h3>{{user.first}} {{user.last}} Account</h3>
       <a href="/admin">Admin CPanel</a>
-    {{else}}
-      <h3>{{user.first}} {{user.last}} Account</h3>
     {{/if}}
     <br/>
     <a href="/home">Home</a><br/>

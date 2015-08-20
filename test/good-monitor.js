@@ -15,13 +15,13 @@ var expect = Code.expect;
 var it = lab.test;
 
 
-describe('good', function() {
+describe('good', function () {
 
-  it('monitor registration failed', { parallel: false }, function(done) {
+  it('monitor registration failed', { parallel: false }, function (done) {
 
     var orig = Good.register;
 
-    Good.register = function(plugin, options, next) {
+    Good.register = function (plugin, options, next) {
 
       Good.register = orig;
       return next(new Error('fail'));
@@ -31,7 +31,7 @@ describe('good', function() {
       name: 'fake good'
     };
 
-    Follower.init(internals.manifest, internals.composeOptions, function(err, server) {
+    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.exist();
       expect(err.message).to.equal('fail');

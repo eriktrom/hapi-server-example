@@ -1,7 +1,7 @@
 var internals = {};
 
 
-internals.executeAJAX = function(url, data, callback) {
+internals.executeAJAX = function (url, data, callback) {
 
   var request = new XMLHttpRequest();
 
@@ -9,14 +9,14 @@ internals.executeAJAX = function(url, data, callback) {
 
   request.timedOut = false;
 
-  var requestTimer = setTimeout(function() {
+  var requestTimer = setTimeout(function () {
 
     // Request timed out, Retry or inform user.
     request.timedOut = true;
     request.abort();
   }, 3000);
 
-  request.onreadystatechange = function() {
+  request.onreadystatechange = function () {
 
     if (request.readyState === 4 && callback) {
       return callback(request);
@@ -31,7 +31,7 @@ internals.executeAJAX = function(url, data, callback) {
 };
 
 
-internals.errorMessage = function(message) {
+internals.errorMessage = function (message) {
 
   //  handle error message
 
@@ -52,7 +52,7 @@ internals.errorMessage = function(message) {
 };
 
 
-internals.successMessage = function(request) {
+internals.successMessage = function (request) {
 
 
   // Success clear and display authenticated users links.
@@ -75,7 +75,7 @@ internals.successMessage = function(request) {
 };
 
 
-document.onreadystatechange = function() {
+document.onreadystatechange = function () {
 
 
   if (document.readyState === 'complete') {
@@ -83,7 +83,7 @@ document.onreadystatechange = function() {
 
     // Add click event handler
 
-    document.getElementById('btnLogout').addEventListener('click', function(event) {
+    document.getElementById('btnLogout').addEventListener('click', function (event) {
 
 
       console.log('logout request');
@@ -98,7 +98,7 @@ document.onreadystatechange = function() {
       };
 
 
-      internals.executeAJAX('/logout', requestData, function(request) {
+      internals.executeAJAX('/logout', requestData, function (request) {
 
         if (request.status === 200) {
 
