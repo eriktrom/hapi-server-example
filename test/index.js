@@ -223,6 +223,11 @@ internals.manifest = {
     'hapi-auth-cookie': {},
     'crumb': Config.crumb,
     'vision': {},
+    'visionary': {
+      'engines': { 'html': 'handlebars' },
+      'path': '../views',
+      relativeTo: __dirname
+    },
     'inert': {}
   }
 };

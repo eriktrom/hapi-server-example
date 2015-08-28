@@ -36,6 +36,7 @@
     "inert": "3.x.x",
     "joi": "6.x.x",
     "lodash": "^3.10.1",
-    "vision": "3.x.x"
+    "vision": "3.x.x",
+    "visionary": "^3.x.x"
   }
 }

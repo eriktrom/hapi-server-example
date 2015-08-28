@@ -68,7 +68,12 @@ internals.manifest = {
   ],
   plugins: {
     './version': {},
-    'vision': {}
+    'vision': {},
+    'visionary': {
+      'engines': { 'html': 'handlebars' },
+      'path': '../views',
+      relativeTo: __dirname
+    }
   }
 };
 
