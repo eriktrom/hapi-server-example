@@ -1,7 +1,7 @@
 {
-  "name": "followers-api",
-  "version": "0.0.6",
-  "description": "Hapi JSON API for an ember app that follows feeds about something",
+  "name": "hapi-server",
+  "version": "0.0.7",
+  "description": "Hapi server example",
   "main": "lib/index.js",
   "scripts": {
     "start": "make start",

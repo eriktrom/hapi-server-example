@@ -3,7 +3,7 @@ var Lab = require('lab');
 var Path = require('path');
 var Cheerio = require('cheerio');
 var Config = require('../../lib/config');
-var Follower = require('../../');
+var Server = require('../..');
 var TestHelpers = require('../test-helpers');
 
 var internals = {};
@@ -17,7 +17,7 @@ describe('/login SUCCESS', function () {
 
   it('access login page', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       var request1 = {
         method: 'GET',
@@ -40,7 +40,7 @@ describe('/login SUCCESS', function () {
     //  https://github.com/npm/newww/blob/2bc02c7558c7a3b8bdb34858ff99cd77d7c7c06a/test/handlers/user/login.js
     //  https://github.com/npm/newww/blob/master/routes/public.js
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -97,7 +97,7 @@ describe('/login SUCCESS', function () {
 
   it('Cookie auth login succeeds - with good password & username', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -115,7 +115,7 @@ describe('/login SUCCESS', function () {
 
   it('Cookie auth login succeeds - does not return password in success response', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -135,7 +135,7 @@ describe('/login SUCCESS', function () {
 
   it('test crumb and not much else', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       TestHelpers.generateCrumb(server, true).then(function (request) {
 
@@ -162,7 +162,7 @@ describe('/login FAILURE - Cookie auth login fails', function () {
 
   it('b/c NO crumb', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       var request = {
         method: 'POST',
@@ -182,7 +182,7 @@ describe('/login FAILURE - Cookie auth login fails', function () {
 
   it('with bad password', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       TestHelpers.generateCrumb(server, {username: 'foo', password: 'blah'}).then(function (request) {
 
@@ -199,7 +199,7 @@ describe('/login FAILURE - Cookie auth login fails', function () {
 
   it('with bad username', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       TestHelpers.generateCrumb(server, {username: 'fudge', password: 'foo'}).then(function (request) {
 
@@ -216,7 +216,7 @@ describe('/login FAILURE - Cookie auth login fails', function () {
 
   it('with too short username', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -235,7 +235,7 @@ describe('/login FAILURE - Cookie auth login fails', function () {
 
   it('with missing username', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -256,7 +256,7 @@ describe('/login FAILURE - Cookie auth login fails', function () {
 
   it('with missing password', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -277,7 +277,7 @@ describe('/login FAILURE - Cookie auth login fails', function () {
 
   it('with missing username & password', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -302,7 +302,7 @@ describe('/logout', function () {
 
   it('Ensure logout works', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -344,7 +344,7 @@ describe('/logout', function () {
 
   it('Redirects to /login page when followers-api cookie is not set upon logout', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -381,7 +381,7 @@ describe('/logout', function () {
 
   it('unregistered user tried to access restricted ./logout on api', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 

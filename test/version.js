@@ -1,7 +1,7 @@
 var Code = require('code');
 var Lab = require('lab');
 var Path = require('path');
-var Follower = require('../');
+var Server = require('..');
 var Package = require('../package.json');
 var Config = require('../lib/config');
 
@@ -19,7 +19,7 @@ describe('/version', function () {
 
   it('ensures that /version is always redirected to https', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -36,7 +36,7 @@ describe('/version', function () {
 
   it('returns the version from package.json', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 

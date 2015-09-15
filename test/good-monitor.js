@@ -3,7 +3,7 @@ var Lab = require('lab');
 var Path = require('path');
 var Good = require('good');
 var Config = require('../lib/config');
-var Follower = require('../');
+var Server = require('..');
 
 
 var internals = {};
@@ -31,7 +31,7 @@ describe('good', function () {
       name: 'fake good'
     };
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err) {
+    Server.init(internals.manifest, internals.composeOptions, function (err) {
 
       expect(err).to.exist();
       expect(err.message).to.equal('fail');

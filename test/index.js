@@ -1,5 +1,5 @@
 var Version = require('../lib/version');
-var Follower = require('../');
+var Server = require('..');
 var Code = require('code');
 var Lab = require('lab');
 var Path = require('path');
@@ -20,7 +20,7 @@ describe('/index', function () {
 
   it('starts server and returns hapi server object', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       // expect(server).to.be.instanceof(Hapi.Server); // fails in hapi 9.x.x
       expect(err).to.not.exist();
@@ -43,7 +43,7 @@ describe('/index', function () {
 
     var composeOptions = {};
 
-    Follower.init(manifest, composeOptions, function (err, server) {
+    Server.init(manifest, composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
       expect(server.select('web').info.port).to.equal(5000);
@@ -67,7 +67,7 @@ describe('/index', function () {
       name: 'fake version'
     };
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err) {
+    Server.init(internals.manifest, internals.composeOptions, function (err) {
 
       expect(err).to.exist();
       expect(err.message).to.equal('register version failed');
@@ -78,7 +78,7 @@ describe('/index', function () {
 
   it('forces re-routing to https', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       server.inject('/version', function (res) {
 
@@ -95,7 +95,7 @@ describe('server.ext() request cycle handles', function () {
 
   it('entering an unhandled route redirectes to /home', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       server.select('web-tls').inject('/wakawaka', function (res) {
 
@@ -109,7 +109,7 @@ describe('server.ext() request cycle handles', function () {
 
   it('visiting /admin as a non admin user redirects to /home', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -143,7 +143,7 @@ describe('server.ext() request cycle handles', function () {
 
   it('visiting /admin as a non authenticated user redirects /home', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -165,7 +165,7 @@ describe('server.ext() request cycle handles', function () {
 
   it('should return 401 Not Found when attempting to login w/ bad u/p even when user is already authenticated via crumb cookie', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 

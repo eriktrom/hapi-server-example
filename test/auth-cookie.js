@@ -2,7 +2,7 @@ var Code = require('code');
 var Lab = require('lab');
 var Path = require('path');
 var HapiAuthCookie = require('hapi-auth-cookie');
-var Follower = require('../');
+var Server = require('..');
 
 var internals = {};
 
@@ -27,7 +27,7 @@ describe('/auth-basic', function () {
       name: 'fake hapi-auth-cookie'
     };
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err) {
+    Server.init(internals.manifest, internals.composeOptions, function (err) {
 
       expect(err).to.exist();
       done();

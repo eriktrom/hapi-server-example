@@ -5,7 +5,7 @@ var Cheerio = require('cheerio');
 var Auth = require('hapi-auth-cookie');
 var Hoek = require('hoek');
 var Config = require('../lib/config');
-var Follower = require('../');
+var Server = require('..');
 var TestHelpers = require('./test-helpers');
 
 
@@ -21,7 +21,7 @@ describe('/', function () {
 
   it('redirects to http / to https /', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       var request = { method: 'GET', url: '/' };
       server.select('web').inject(request, function (res) {
@@ -36,7 +36,7 @@ describe('/', function () {
 
   it('redirects to https / to https /home', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       var request = { method: 'GET', url: '/' };
       server.select('web-tls').inject(request, function (res) {
@@ -54,7 +54,7 @@ describe('/home', function () {
 
   it('ensures that /home is always redirected to https', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -71,7 +71,7 @@ describe('/home', function () {
 
   it('returns the home page via https', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -87,7 +87,7 @@ describe('/home', function () {
 
   it('logged in user info is displayed', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -126,7 +126,7 @@ describe('./account', function () {
 
   it('logged in (admin) user accesses /account page', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -162,7 +162,7 @@ describe('./account', function () {
 
   it('logged in (admin) user accesses /admin page', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -199,7 +199,7 @@ describe('./account', function () {
 
   it('logged in (NON-admin) user accesses /account page', function (done) {
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+    Server.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
@@ -251,7 +251,7 @@ describe('hapi-auth-cookie tests', function () {
       name: 'fake hapi-auth-cookie'
     };
 
-    Follower.init(internals.manifest, internals.composeOptions, function (err) {
+    Server.init(internals.manifest, internals.composeOptions, function (err) {
 
       expect(err).to.exist();
 
@@ -264,7 +264,7 @@ describe('hapi-auth-cookie tests', function () {
     var manifest = Hoek.clone(internals.manifest);
     delete manifest.plugins['./auth-cookie'];
 
-    var failingInit = Follower.init.bind(Follower, manifest, internals.composeOptions, function (err) {
+    var failingInit = Server.init.bind(Server, manifest, internals.composeOptions, function (err) {
 
       expect(err).to.exist();
       done();

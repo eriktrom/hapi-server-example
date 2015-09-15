@@ -47,5 +47,5 @@ exports.getCookie = function getCookie (res) {
   Code.expect(setCookieHeader[0]).to.contain('Max-Age=60');
 
   var cookieValue = setCookieHeader[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/)[1];
-  return 'followers-api='+cookieValue;
+  return 'hapi-server='+cookieValue;
 };
