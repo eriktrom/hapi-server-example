@@ -29,12 +29,26 @@ describe('/index', function () {
     });
   });
 
-  it('starts server on provided port', function (done) {
+  it('starts server on port provided by manifest', function (done) {
 
-    Follower.init({ connections: [{ port: 5000, labels: ['web', 'web-tls', 'api'] }], plugins: {'vision': {}} }, {}, function (err, server) {
+    var manifest = {
+      connections: [{
+        port: 5000,
+        labels: ['web', 'web-tls', 'api']
+      }],
+      plugins: {
+        'vision': {}
+      }
+    };
+
+    var composeOptions = {};
+
+    Follower.init(manifest, composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
       expect(server.select('web').info.port).to.equal(5000);
+      expect(server.select('web-tls').info.port).to.equal(5000);
+      expect(server.select('api').info.port).to.equal(5000);
 
       server.stop(done);
     });
