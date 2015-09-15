@@ -17,6 +17,38 @@ var describe = lab.experiment;
 var expect = Code.expect;
 var it = lab.test;
 
+describe('/', function () {
+
+  it('redirects to http / to https /', function (done) {
+
+    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+
+      var request = { method: 'GET', url: '/' };
+      server.select('web').inject(request, function (res) {
+
+        expect(res.statusCode, 'Status code').to.equal(301);
+        expect(res.headers.location).to.equal('https://localhost:8001/');
+
+        server.stop(done);
+      });
+    });
+  });
+
+  it('redirects to https / to https /home', function (done) {
+
+    Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
+
+      var request = { method: 'GET', url: '/' };
+      server.select('web-tls').inject(request, function (res) {
+
+        expect(res.statusCode, 'Status code').to.equal(301);
+        expect(res.headers.location).to.equal('/home');
+
+        server.stop(done);
+      });
+    });
+  });
+});
 
 describe('/home', function () {
 
