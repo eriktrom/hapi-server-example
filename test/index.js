@@ -4,7 +4,7 @@ var Code = require('code');
 var Lab = require('lab');
 var Path = require('path');
 var Config = require('../lib/config');
-var GenerateCrumb = require('./generate-crumb');
+var TestHelpers = require('./test-helpers');
 
 
 var internals = {};
@@ -113,19 +113,12 @@ describe('server.ext() request cycle handles', function () {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, {username: 'bar', password: 'bar'}).then(function (request) {
+      TestHelpers.generateCrumb(server, {username: 'bar', password: 'bar'}).then(function (request) {
 
         server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
           expect(res.result.username).to.equal('bar');
-
-          var header = res.headers['set-cookie'];
-          expect(header.length).to.equal(1);
-
-          expect(header[0]).to.contain('Max-Age=60');
-
-          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
 
           // ./home greets authenticated user
 
@@ -133,7 +126,7 @@ describe('server.ext() request cycle handles', function () {
             method: 'GET',
             url: '/admin',
             headers: {
-              cookie: 'followers-api=' + cookie[1]
+              cookie: TestHelpers.getCookie(res)
             }
           };
 
@@ -176,23 +169,18 @@ describe('server.ext() request cycle handles', function () {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
-
-          var header = res.headers['set-cookie'];
-          expect(header.length).to.equal(1);
-          expect(header[0]).to.contain('Max-Age=60');
-          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
 
           var request2 = {
             method: 'POST',
             url: '/login',
             payload: { username: 'bogus', password: 'more bogus' },
             headers: {
-              cookie: 'followers-api=' + cookie[1]
+              cookie: TestHelpers.getCookie(res)
             }
           };
 

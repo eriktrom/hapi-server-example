@@ -4,23 +4,16 @@ var Path = require('path');
 var Cheerio = require('cheerio');
 var Config = require('../../lib/config');
 var Follower = require('../../');
-var GenerateCrumb = require('../generate-crumb');
+var TestHelpers = require('../test-helpers');
 
 var internals = {};
-
-internals.getCookie = function (res) {
-
-  return 'followers-api=' + res.headers['set-cookie'][0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/)[1];
-};
-
 
 var lab = exports.lab = Lab.script();
 var describe = lab.experiment;
 var expect = Code.expect;
 var it = lab.test;
 
-
-describe('/login', function () {
+describe('/login SUCCESS', function () {
 
   it('access login page', function (done) {
 
@@ -53,18 +46,12 @@ describe('/login', function () {
 
       // Successfull Login
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
           expect(res.result.username).to.equal('foo');
-
-          var header = res.headers['set-cookie'];
-          expect(header.length).to.equal(1);
-
-          expect(header[0]).to.contain('Max-Age=60');
-
 
           // ./home greets authenticated user
 
@@ -72,7 +59,7 @@ describe('/login', function () {
             method: 'GET',
             url: '/home',
             headers: {
-              cookie: internals.getCookie(res)
+              cookie: TestHelpers.getCookie(res)
             }
           };
 
@@ -91,13 +78,13 @@ describe('/login', function () {
               method: 'GET',
               url: '/login',
               headers: {
-                cookie: internals.getCookie(res) // still use res 1 for cookie
+                cookie: TestHelpers.getCookie(res) // still use res 1 for cookie
               }
             };
 
             server.select('web-tls').inject(request3, function (res3) {
 
-              expect(res3.statusCode, 'Status code').to.equal(302); // redirected
+              expect(res3.statusCode, 'GET /login redirects to account if already logged in.').to.equal(302);
               expect(res3.headers.location).to.include('/account');
 
               server.stop(done);
@@ -114,7 +101,7 @@ describe('/login', function () {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         server.select('web-tls').inject(request, function (res) {
 
@@ -132,7 +119,7 @@ describe('/login', function () {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         server.select('web-tls').inject(request, function (res) {
 
@@ -150,7 +137,7 @@ describe('/login', function () {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         var crumb = request.payload.crumb;
         var cookie = request.headers.cookie;
@@ -168,10 +155,12 @@ describe('/login', function () {
     });
   });
 
+});
 
-  // @todo  split below into tests
 
-  it('Cookie auth login fails - b/c NO crumb', function (done) {
+describe('/login FAILURE - Cookie auth login fails', function () {
+
+  it('b/c NO crumb', function (done) {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
@@ -191,11 +180,11 @@ describe('/login', function () {
     });
   });
 
-  it('Cookie auth login fails - with bad password', function (done) {
+  it('with bad password', function (done) {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
-      GenerateCrumb(server, {username: 'foo', password: 'blah'}).then(function (request) {
+      TestHelpers.generateCrumb(server, {username: 'foo', password: 'blah'}).then(function (request) {
 
         server.select('web-tls').inject(request, function (res) {
 
@@ -208,11 +197,11 @@ describe('/login', function () {
     });
   });
 
-  it('Cookie auth login fails - with bad username', function (done) {
+  it('with bad username', function (done) {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
-      GenerateCrumb(server, {username: 'fudge', password: 'foo'}).then(function (request) {
+      TestHelpers.generateCrumb(server, {username: 'fudge', password: 'foo'}).then(function (request) {
 
         server.select('web-tls').inject(request, function (res) {
 
@@ -225,15 +214,13 @@ describe('/login', function () {
     });
   });
 
-
-
-  it('Cookie auth login fails - with too short username', function (done) {
+  it('with too short username', function (done) {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, {username: 'f', password: 'foo'}).then(function (request) {
+      TestHelpers.generateCrumb(server, {username: 'f', password: 'foo'}).then(function (request) {
 
         server.select('api').inject(request, function (res) {
 
@@ -246,13 +233,13 @@ describe('/login', function () {
     });
   });
 
-  it('Cookie auth login fails - with missing username', function (done) {
+  it('with missing username', function (done) {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         delete request.payload.username;
 
@@ -267,13 +254,13 @@ describe('/login', function () {
     });
   });
 
-  it('Cookie auth login fails - with missing password', function (done) {
+  it('with missing password', function (done) {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         delete request.payload.password;
 
@@ -288,13 +275,13 @@ describe('/login', function () {
     });
   });
 
-  it('Cookie auth login fails - with missing username & password', function (done) {
+  it('with missing username & password', function (done) {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         delete request.payload.username;
         delete request.payload.password;
@@ -309,7 +296,6 @@ describe('/login', function () {
       });
     });
   });
-
 });
 
 describe('/logout', function () {
@@ -320,7 +306,7 @@ describe('/logout', function () {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         server.select('web-tls').inject(request, function (res) {
 
@@ -329,7 +315,7 @@ describe('/logout', function () {
 
 
           var cookie1 = request.headers.cookie;
-          var cookie2 = internals.getCookie(res);
+          var cookie2 = TestHelpers.getCookie(res);
           var newCookie = cookie1 + '; ' + cookie2;
 
           var request2 = {
@@ -362,7 +348,7 @@ describe('/logout', function () {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         server.select('web-tls').inject(request, function (/*res*/) {
 

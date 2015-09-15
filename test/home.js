@@ -6,7 +6,7 @@ var Auth = require('hapi-auth-cookie');
 var Hoek = require('hoek');
 var Config = require('../lib/config');
 var Follower = require('../');
-var GenerateCrumb = require('./generate-crumb');
+var TestHelpers = require('./test-helpers');
 
 
 var internals = {};
@@ -59,33 +59,26 @@ describe('/home', function () {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
           expect(res.result.username).to.equal('foo');
-
-          var header = res.headers['set-cookie'];
-          expect(header.length).to.equal(1);
-          expect(header[0]).to.contain('Max-Age=60');
-
-          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
-
           // ./home greets authenticated user
 
           var request2 = {
             method: 'GET',
             url: '/home',
             headers: {
-              cookie: 'followers-api='+cookie[1]
+              cookie: TestHelpers.getCookie(res)
             }
           };
 
           server.select('web-tls').inject(request2, function (res2) {
 
             var $ = Cheerio.load(res2.result);
-            var result = ($('h1', 'body').text());
+            var result = $('h1', 'body').text();
 
             expect(result).to.equal('Foo Foo');
 
@@ -105,26 +98,19 @@ describe('./account', function () {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
           expect(res.result.username).to.equal('foo');
-
-          var header = res.headers['set-cookie'];
-          expect(header.length).to.equal(1);
-
-          expect(header[0]).to.contain('Max-Age=60');
-          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
-
           // ./home greets authenticated user
 
           var request2 = {
             method: 'GET',
             url: '/account',
             headers: {
-              cookie: 'followers-api='+cookie[1]
+              cookie: TestHelpers.getCookie(res)
             }
           };
 
@@ -148,18 +134,12 @@ describe('./account', function () {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, true).then(function (request) {
+      TestHelpers.generateCrumb(server, true).then(function (request) {
 
         server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
           expect(res.result.username).to.equal('foo');
-
-          var header = res.headers['set-cookie'];
-          expect(header.length).to.equal(1);
-
-          expect(header[0]).to.contain('Max-Age=60');
-          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
 
           // ./home greets authenticated user
 
@@ -167,7 +147,7 @@ describe('./account', function () {
             method: 'GET',
             url: '/admin',
             headers: {
-              cookie: 'followers-api='+cookie[1]
+              cookie: TestHelpers.getCookie(res)
             }
           };
 
@@ -191,18 +171,12 @@ describe('./account', function () {
 
       expect(err).to.not.exist();
 
-      GenerateCrumb(server, {username: 'bar', password: 'bar'}).then(function (request) {
+      TestHelpers.generateCrumb(server, {username: 'bar', password: 'bar'}).then(function (request) {
 
         server.select('api').inject(request, function (res) {
 
           expect(res.statusCode, 'Status code').to.equal(200);
           expect(res.result.username).to.equal('bar');
-
-          var header = res.headers['set-cookie'];
-          expect(header.length).to.equal(1);
-
-          expect(header[0]).to.contain('Max-Age=60');
-          var cookie = header[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/);
 
           // ./home greets authenticated user
 
@@ -210,7 +184,7 @@ describe('./account', function () {
             method: 'GET',
             url: '/account',
             headers: {
-              cookie: 'followers-api='+cookie[1]
+              cookie: TestHelpers.getCookie(res)
             }
           };
 

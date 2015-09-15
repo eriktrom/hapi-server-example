@@ -1,6 +1,7 @@
 var Promise = require('bluebird');
+var Code = require('code');
 
-module.exports = function generateCrumb (server, opts) {
+exports.generateCrumb = function generateCrumb (server, opts) {
 
   if (!opts) { throw Error('Forgot to pass opts or true as second param to generate crumb'); }
   if (!server) { throw Error('Forgot to pass server to generae crumb'); }
@@ -37,4 +38,14 @@ module.exports = function generateCrumb (server, opts) {
 
     console.log('error caught from generate crumb %o', err, err.message, err.stack);
   });
+};
+
+exports.getCookie = function getCookie (res) {
+
+  var setCookieHeader = res.headers['set-cookie'];
+  Code.expect(setCookieHeader.length).to.equal(1);
+  Code.expect(setCookieHeader[0]).to.contain('Max-Age=60');
+
+  var cookieValue = setCookieHeader[0].match(/(?:[^\x00-\x20\(\)<>@\,;\:\\"\/\[\]\?\=\{\}\x7F]+)\s*=\s*(?:([^\x00-\x20\"\,\;\\\x7F]*))/)[1];
+  return 'followers-api='+cookieValue;
 };
