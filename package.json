@@ -1,5 +1,5 @@
 {
-  "name": "hapi-server",
+  "name": "hapi-server-example",
   "version": "0.0.7",
   "description": "Hapi server example",
   "main": "lib/index.js",
