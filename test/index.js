@@ -93,7 +93,7 @@ describe('/index', function () {
 
 describe('server.ext() request cycle handles', function () {
 
-  it('bad route entered', function (done) {
+  it('entering an unhandled route redirectes to /home', function (done) {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
@@ -107,7 +107,7 @@ describe('server.ext() request cycle handles', function () {
     });
   });
 
-  it('insufficient scope for user web-tls', function (done) {
+  it('visiting /admin as a non admin user redirects to /home', function (done) {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
@@ -148,7 +148,7 @@ describe('server.ext() request cycle handles', function () {
     });
   });
 
-  it('insufficient scope public user web-tls', function (done) {
+  it('visiting /admin as a non authenticated user redirects /home', function (done) {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
@@ -170,7 +170,7 @@ describe('server.ext() request cycle handles', function () {
     });
   });
 
-  it('Logging in again, even with the correct cookie will throw a 403 from the crumb plugin when wrong username/password', function (done) {
+  it('should return 401 Not Found when attempting to login w/ bad u/p even when user is already authenticated via crumb cookie', function (done) {
 
     Follower.init(internals.manifest, internals.composeOptions, function (err, server) {
 
